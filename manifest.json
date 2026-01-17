@@ -58,6 +58,15 @@
       "category": "file-organization",
       "language": "bash",
       "added": "2026-01-17"
+    },
+    {
+      "name": "meeting-notes",
+      "path": "tools/meeting-notes",
+      "description": "Meeting notes template generator with multiple templates, action item tracking, and search",
+      "version": "1.0.0",
+      "category": "note-taking",
+      "language": "bash",
+      "added": "2026-01-17"
     }
   ],
   "evolution_history": [
@@ -80,6 +89,11 @@
       "date": "2026-01-17",
       "action": "add_tool",
       "description": "Added bookmarks tool for managing URLs with tagging, search, and browser integration"
+    },
+    {
+      "date": "2026-01-17",
+      "action": "add_tool",
+      "description": "Added meeting-notes tool for generating meeting notes from templates with action item tracking"
     }
   ],
   "config": {
