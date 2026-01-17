@@ -1,0 +1,17 @@
+# Data directories (user-specific)
+tools/*/data/
+
+# Logs
+logs/
+
+# Agent state
+.agent/
+
+# Editor backups
+*~
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db

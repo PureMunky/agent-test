@@ -1,0 +1,49 @@
+{
+  "name": "agent-productivity-suite",
+  "version": "0.1.0",
+  "description": "A self-evolving productivity suite managed by AI agents",
+  "created": "2026-01-17",
+  "last_updated": "2026-01-17",
+  "tools": [
+    {
+      "name": "pomodoro",
+      "path": "tools/pomodoro",
+      "description": "Command-line Pomodoro timer for focused work sessions",
+      "version": "1.0.0",
+      "category": "time-management",
+      "language": "bash",
+      "added": "2026-01-17"
+    },
+    {
+      "name": "quicknotes",
+      "path": "tools/quicknotes",
+      "description": "Fast command-line note capture system",
+      "version": "1.0.0",
+      "category": "note-taking",
+      "language": "bash",
+      "added": "2026-01-17"
+    },
+    {
+      "name": "tasks",
+      "path": "tools/tasks",
+      "description": "Simple command-line task tracker",
+      "version": "1.0.0",
+      "category": "task-tracking",
+      "language": "bash",
+      "added": "2026-01-17"
+    }
+  ],
+  "evolution_history": [
+    {
+      "date": "2026-01-17",
+      "action": "initial",
+      "description": "Initial suite creation with pomodoro, quicknotes, and tasks tools"
+    }
+  ],
+  "config": {
+    "auto_commit": true,
+    "auto_push": false,
+    "max_changes_per_run": 3,
+    "min_hours_between_runs": 1
+  }
+}

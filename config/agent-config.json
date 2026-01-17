@@ -1,0 +1,42 @@
+{
+  "agent_instructions": {
+    "purpose": "Analyze the productivity suite and either create new useful tools or improve existing ones",
+    "guidelines": [
+      "Focus on practical, everyday productivity improvements",
+      "Prefer simple, standalone scripts over complex systems",
+      "Each tool should solve a specific problem well",
+      "Tools should work on Linux and be shell/Python based for portability",
+      "Avoid external API dependencies unless essential",
+      "Include usage documentation in each tool",
+      "Write tests when appropriate"
+    ],
+    "tool_categories": [
+      "time-management",
+      "file-organization",
+      "note-taking",
+      "task-tracking",
+      "automation",
+      "system-monitoring",
+      "data-backup",
+      "focus-helpers"
+    ],
+    "improvement_priorities": [
+      "Fix bugs in existing tools",
+      "Add missing features to incomplete tools",
+      "Improve documentation",
+      "Add error handling",
+      "Create new complementary tools"
+    ]
+  },
+  "constraints": {
+    "max_file_size_kb": 50,
+    "max_files_per_tool": 5,
+    "allowed_languages": ["bash", "python", "javascript"],
+    "forbidden_actions": [
+      "modifying files outside project directory",
+      "network requests without user confirmation",
+      "deleting user data",
+      "installing system packages"
+    ]
+  }
+}
