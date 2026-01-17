@@ -46,10 +46,10 @@ if [[ -f "$LAST_RUN_FILE" ]]; then
     LAST_RUN=$(cat "$LAST_RUN_FILE")
     CURRENT_TIME=$(date +%s)
     TIME_DIFF=$((CURRENT_TIME - LAST_RUN))
-    MIN_INTERVAL=3600  # 1 hour in seconds
+    MIN_INTERVAL=540  # 9 minutes in seconds
 
     if [[ $TIME_DIFF -lt $MIN_INTERVAL ]] && [[ "$DRY_RUN" == "false" ]]; then
-        log "Skipping run - last run was $(($TIME_DIFF / 60)) minutes ago (minimum: 60 minutes)"
+        log "Skipping run - last run was $(($TIME_DIFF / 60)) minutes ago (minimum: 9 minutes)"
         exit 0
     fi
 fi

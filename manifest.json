@@ -40,6 +40,15 @@
       "category": "time-management",
       "language": "bash",
       "added": "2026-01-17"
+    },
+    {
+      "name": "habits",
+      "path": "tools/habits",
+      "description": "Daily habit tracker with streak counting and visual progress grid",
+      "version": "1.0.0",
+      "category": "task-tracking",
+      "language": "bash",
+      "added": "2026-01-17"
     }
   ],
   "evolution_history": [
@@ -52,6 +61,11 @@
       "date": "2026-01-17",
       "action": "add_tool",
       "description": "Added timelog tool for tracking time spent on projects and activities"
+    },
+    {
+      "date": "2026-01-17",
+      "action": "add_tool",
+      "description": "Added habits tool for tracking daily habits with streaks and visual progress grid"
     }
   ],
   "config": {

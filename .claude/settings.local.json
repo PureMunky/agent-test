@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chmod:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial productivity suite setup\n\n- Created self-evolving productivity suite framework\n- Added run.sh for cron-based autonomous evolution\n- Created three seed tools:\n  - pomodoro: Focus timer with work/break sessions\n  - quicknotes: Fast note capture system\n  - tasks: Simple task tracker with JSON storage\n- Added manifest.json for tracking tools and evolution history\n- Added agent configuration for guiding AI improvements\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(tree:*)",
+      "Bash(claude --version)",
+      "Bash(docker:*)",
+      "Bash(./run-containerized.sh)"
+    ]
+  }
+}
