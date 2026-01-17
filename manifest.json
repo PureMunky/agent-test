@@ -4,6 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-17",
+  "tool_count": 8,
   "tools": [
     {
       "name": "pomodoro",
@@ -67,6 +68,15 @@
       "category": "note-taking",
       "language": "bash",
       "added": "2026-01-17"
+    },
+    {
+      "name": "scaffold",
+      "path": "tools/scaffold",
+      "description": "Project scaffolding tool with built-in and custom templates for quickly bootstrapping new projects",
+      "version": "1.0.0",
+      "category": "automation",
+      "language": "bash",
+      "added": "2026-01-17"
     }
   ],
   "evolution_history": [
@@ -94,6 +104,11 @@
       "date": "2026-01-17",
       "action": "add_tool",
       "description": "Added meeting-notes tool for generating meeting notes from templates with action item tracking"
+    },
+    {
+      "date": "2026-01-17",
+      "action": "add_tool",
+      "description": "Added scaffold tool for project scaffolding with 8 built-in templates and custom template support"
     }
   ],
   "config": {
