@@ -49,6 +49,15 @@
       "category": "task-tracking",
       "language": "bash",
       "added": "2026-01-17"
+    },
+    {
+      "name": "bookmarks",
+      "path": "tools/bookmarks",
+      "description": "Command-line bookmark manager for URLs and resources with tagging and search",
+      "version": "1.0.0",
+      "category": "file-organization",
+      "language": "bash",
+      "added": "2026-01-17"
     }
   ],
   "evolution_history": [
@@ -66,6 +75,11 @@
       "date": "2026-01-17",
       "action": "add_tool",
       "description": "Added habits tool for tracking daily habits with streaks and visual progress grid"
+    },
+    {
+      "date": "2026-01-17",
+      "action": "add_tool",
+      "description": "Added bookmarks tool for managing URLs with tagging, search, and browser integration"
     }
   ],
   "config": {
