@@ -31,6 +31,15 @@
       "category": "task-tracking",
       "language": "bash",
       "added": "2026-01-17"
+    },
+    {
+      "name": "timelog",
+      "path": "tools/timelog",
+      "description": "Time tracking tool for logging hours on projects and activities",
+      "version": "1.0.0",
+      "category": "time-management",
+      "language": "bash",
+      "added": "2026-01-17"
     }
   ],
   "evolution_history": [
@@ -38,6 +47,11 @@
       "date": "2026-01-17",
       "action": "initial",
       "description": "Initial suite creation with pomodoro, quicknotes, and tasks tools"
+    },
+    {
+      "date": "2026-01-17",
+      "action": "add_tool",
+      "description": "Added timelog tool for tracking time spent on projects and activities"
     }
   ],
   "config": {
