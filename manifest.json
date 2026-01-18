@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-18",
-  "tool_count": 28,
+  "tool_count": 29,
   "tools": [
     {
       "name": "pomodoro",
@@ -257,6 +257,15 @@
       "category": "focus-helpers",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "break-timer",
+      "path": "tools/break-timer",
+      "description": "Smart break reminders with healthy activity suggestions for stretch, short, and long breaks with history tracking",
+      "version": "1.0.0",
+      "category": "focus-helpers",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -389,6 +398,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added daily-kickstart tool for structured morning routines with breathing exercises, yesterday review, today's overview (integrating tasks/deadlines/habits/goals), intention setting, and energy check"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "add_tool",
+      "description": "Added break-timer tool for smart break reminders with curated healthy activity suggestions, configurable intervals, history tracking, and statistics"
     }
   ],
   "config": {
