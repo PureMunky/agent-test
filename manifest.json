@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-18",
-  "tool_count": 21,
+  "tool_count": 22,
   "tools": [
     {
       "name": "pomodoro",
@@ -194,6 +194,15 @@
       "category": "task-tracking",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "goals",
+      "path": "tools/goals",
+      "description": "Long-term goal setting and progress tracking with milestones, deadlines, and visual progress indicators",
+      "version": "1.0.0",
+      "category": "task-tracking",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -291,6 +300,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added inbox tool - GTD-style capture and processing inbox with priority levels, deferral, tagging, and integration with tasks/notes tools"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "add_tool",
+      "description": "Added goals tool - Long-term goal tracker with milestones, progress visualization, deadline tracking, notes, and statistics"
     }
   ],
   "config": {
