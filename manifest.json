@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-18",
-  "tool_count": 16,
+  "tool_count": 17,
   "tools": [
     {
       "name": "pomodoro",
@@ -149,6 +149,15 @@
       "category": "note-taking",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "reminders",
+      "path": "tools/reminders",
+      "description": "Quick reminder and alarm tool with natural language time parsing, recurring reminders, and desktop notifications",
+      "version": "1.0.0",
+      "category": "time-management",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -221,6 +230,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added worklog tool for daily work journaling with accomplishments, blockers, goals tracking, and standup report generation"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "fix",
+      "description": "Registered reminders tool that was missing from manifest - added README.md documentation and manifest entry"
     }
   ],
   "config": {
