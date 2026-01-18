@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-18",
-  "tool_count": 18,
+  "tool_count": 19,
   "tools": [
     {
       "name": "pomodoro",
@@ -167,6 +167,15 @@
       "category": "data-backup",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "context-switcher",
+      "path": "tools/context-switcher",
+      "description": "Project context manager for switching between projects with notes, environment variables, and activity tracking",
+      "version": "1.0.0",
+      "category": "automation",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -249,6 +258,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added backup tool for backing up files, directories, and all productivity suite data with restore and pruning capabilities"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "add_tool",
+      "description": "Added context-switcher tool for managing project contexts with notes, environment variables, and activity history"
     }
   ],
   "config": {
