@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-18",
-  "tool_count": 10,
+  "tool_count": 11,
   "tools": [
     {
       "name": "pomodoro",
@@ -95,6 +95,15 @@
       "category": "automation",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "daily-summary",
+      "path": "tools/daily-summary",
+      "description": "Productivity dashboard aggregating data from all tools with daily/weekly reports and goal tracking",
+      "version": "1.0.0",
+      "category": "system-monitoring",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -137,6 +146,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added clipboard history manager for storing, searching, and retrieving past clipboard contents with tagging support"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "add_tool",
+      "description": "Added daily-summary tool for aggregating productivity data from all tools with visual dashboards, goal tracking, and weekly reports"
     }
   ],
   "config": {
