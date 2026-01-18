@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-18",
-  "tool_count": 20,
+  "tool_count": 21,
   "tools": [
     {
       "name": "pomodoro",
@@ -185,6 +185,15 @@
       "category": "time-management",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "inbox",
+      "path": "tools/inbox",
+      "description": "GTD-style capture and processing inbox for collecting items that need attention with priority, deferral, and tool integration",
+      "version": "1.0.0",
+      "category": "task-tracking",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -277,6 +286,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added stopwatch tool for free-form timing with lap times, pause/resume, multiple named timers, and session history"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "add_tool",
+      "description": "Added inbox tool - GTD-style capture and processing inbox with priority levels, deferral, tagging, and integration with tasks/notes tools"
     }
   ],
   "config": {
