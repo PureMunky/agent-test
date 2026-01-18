@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-18",
-  "tool_count": 19,
+  "tool_count": 20,
   "tools": [
     {
       "name": "pomodoro",
@@ -176,6 +176,15 @@
       "category": "automation",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "stopwatch",
+      "path": "tools/stopwatch",
+      "description": "Simple stopwatch with lap times, pause/resume, multiple named timers, and session history",
+      "version": "1.0.0",
+      "category": "time-management",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -263,6 +272,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added context-switcher tool for managing project contexts with notes, environment variables, and activity history"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "add_tool",
+      "description": "Added stopwatch tool for free-form timing with lap times, pause/resume, multiple named timers, and session history"
     }
   ],
   "config": {
