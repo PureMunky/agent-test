@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-18",
-  "tool_count": 12,
+  "tool_count": 13,
   "tools": [
     {
       "name": "pomodoro",
@@ -113,6 +113,15 @@
       "category": "focus-helpers",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "weekly-planner",
+      "path": "tools/weekly-planner",
+      "description": "Weekly planning and review tool with goals, priorities, wins tracking, and guided reflection prompts",
+      "version": "1.0.0",
+      "category": "task-tracking",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -165,6 +174,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added focus-mode tool for managing distraction-free work sessions with customizable site blocking, session tracking, and statistics"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "add_tool",
+      "description": "Added weekly-planner tool for weekly planning and review with goals, priorities, wins tracking, and guided reflection prompts"
     }
   ],
   "config": {
