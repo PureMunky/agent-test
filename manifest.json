@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-18",
-  "tool_count": 25,
+  "tool_count": 26,
   "tools": [
     {
       "name": "pomodoro",
@@ -230,6 +230,15 @@
       "category": "note-taking",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "launcher",
+      "path": "tools/launcher",
+      "description": "Quick command palette for finding, searching, and running any tool with aliases, favorites, and command history",
+      "version": "1.0.0",
+      "category": "automation",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -347,6 +356,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added readlist tool for managing reading lists and learning content with support for multiple content types, progress tracking, notes/takeaways, and statistics"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "add_tool",
+      "description": "Added launcher tool - command palette for the productivity suite with search, aliases, favorites, and command history"
     }
   ],
   "config": {
