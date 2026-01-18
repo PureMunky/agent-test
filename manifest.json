@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
-  "last_updated": "2026-01-17",
-  "tool_count": 8,
+  "last_updated": "2026-01-18",
+  "tool_count": 9,
   "tools": [
     {
       "name": "pomodoro",
@@ -77,6 +77,15 @@
       "category": "automation",
       "language": "bash",
       "added": "2026-01-17"
+    },
+    {
+      "name": "file-organizer",
+      "path": "tools/file-organizer",
+      "description": "Organize files by type, date, or custom rules with undo support and duplicate detection",
+      "version": "1.0.0",
+      "category": "file-organization",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -109,6 +118,11 @@
       "date": "2026-01-17",
       "action": "add_tool",
       "description": "Added scaffold tool for project scaffolding with 8 built-in templates and custom template support"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "add_tool",
+      "description": "Added file-organizer tool for organizing files by type or date with undo support, dry-run mode, and cleanup scanning"
     }
   ],
   "config": {
