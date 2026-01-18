@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-18",
-  "tool_count": 22,
+  "tool_count": 23,
   "tools": [
     {
       "name": "pomodoro",
@@ -203,6 +203,15 @@
       "category": "task-tracking",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "energy-tracker",
+      "path": "tools/energy-tracker",
+      "description": "Track energy levels and mood throughout the day to discover productivity patterns and peak performance times",
+      "version": "1.0.0",
+      "category": "system-monitoring",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -305,6 +314,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added goals tool - Long-term goal tracker with milestones, progress visualization, deadline tracking, notes, and statistics"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "add_tool",
+      "description": "Added energy-tracker tool for logging energy levels and mood with time-of-day pattern analysis to optimize productivity"
     }
   ],
   "config": {
