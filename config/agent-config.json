@@ -8,7 +8,10 @@
       "Tools should work on Linux and be shell/Python based for portability",
       "Avoid external API dependencies unless essential",
       "Include usage documentation in each tool",
-      "Write tests when appropriate"
+      "Write tests when appropriate",
+      "Consolidate tools when functionality overlaps - merge similar tools into one cohesive solution",
+      "Prefer enhancing existing tools over creating new ones when the new functionality logically extends an existing tool",
+      "Before creating a new tool, review existing tools to determine if the feature could be added there instead"
     ],
     "tool_categories": [
       "time-management",
@@ -22,10 +25,11 @@
     ],
     "improvement_priorities": [
       "Fix bugs in existing tools",
+      "Consolidate tools with overlapping functionality",
       "Add missing features to incomplete tools",
       "Improve documentation",
       "Add error handling",
-      "Create new complementary tools"
+      "Create new tools only when no existing tool can be reasonably extended"
     ]
   },
   "constraints": {
