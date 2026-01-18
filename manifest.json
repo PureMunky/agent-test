@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-18",
-  "tool_count": 13,
+  "tool_count": 14,
   "tools": [
     {
       "name": "pomodoro",
@@ -122,6 +122,15 @@
       "category": "task-tracking",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "deadlines",
+      "path": "tools/deadlines",
+      "description": "Time-sensitive task and deadline tracker with priority levels, countdown displays, and snooze functionality",
+      "version": "1.0.0",
+      "category": "task-tracking",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -179,6 +188,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added weekly-planner tool for weekly planning and review with goals, priorities, wins tracking, and guided reflection prompts"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "add_tool",
+      "description": "Added deadlines tool for tracking time-sensitive tasks with due dates, priority levels, countdown displays, and snooze functionality"
     }
   ],
   "config": {
