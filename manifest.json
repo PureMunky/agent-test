@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-18",
-  "tool_count": 14,
+  "tool_count": 15,
   "tools": [
     {
       "name": "pomodoro",
@@ -131,6 +131,15 @@
       "category": "task-tracking",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "snippets",
+      "path": "tools/snippets",
+      "description": "Command and code snippet manager for storing, organizing, and quickly recalling frequently used commands and text",
+      "version": "1.0.0",
+      "category": "automation",
+      "language": "bash",
+      "added": "2026-01-18"
     }
   ],
   "evolution_history": [
@@ -193,6 +202,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added deadlines tool for tracking time-sensitive tasks with due dates, priority levels, countdown displays, and snooze functionality"
+    },
+    {
+      "date": "2026-01-18",
+      "action": "add_tool",
+      "description": "Added snippets tool for managing commands and code snippets with tagging, search, clipboard integration, and direct execution"
     }
   ],
   "config": {
