@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-19",
-  "tool_count": 40,
+  "tool_count": 41,
   "tools": [
     {
       "name": "pomodoro",
@@ -365,6 +365,15 @@
       "category": "task-tracking",
       "language": "bash",
       "added": "2026-01-19"
+    },
+    {
+      "name": "cheatsheet",
+      "path": "tools/cheatsheet",
+      "description": "Quick reference cards for commands, shortcuts, and syntax with built-in cheatsheets (git, vim, docker, bash, tmux), custom sheets, search, and markdown import/export",
+      "version": "1.0.0",
+      "category": "note-taking",
+      "language": "bash",
+      "added": "2026-01-19"
     }
   ],
   "evolution_history": [
@@ -592,6 +601,11 @@
       "date": "2026-01-19",
       "action": "add_tool",
       "description": "Added checklist tool - reusable checklist manager for repetitive workflows (code reviews, deployments, routines) with 6 built-in templates, interactive run mode, progress tracking, completion history, markdown import/export, and partial name matching"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "add_tool",
+      "description": "Added cheatsheet tool - quick reference card manager with 5 built-in cheatsheets (git, vim, docker, bash, tmux), custom sheet creation, cross-sheet search, section organization, and markdown import/export"
     }
   ],
   "config": {
