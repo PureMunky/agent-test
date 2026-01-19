@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-19",
-  "tool_count": 38,
+  "tool_count": 39,
   "tools": [
     {
       "name": "pomodoro",
@@ -347,6 +347,15 @@
       "category": "note-taking",
       "language": "bash",
       "added": "2026-01-19"
+    },
+    {
+      "name": "expenses",
+      "path": "tools/expenses",
+      "description": "Personal expense tracker and budget manager with category tracking, monthly budgets, spending reports, and CSV/JSON export",
+      "version": "1.0.0",
+      "category": "task-tracking",
+      "language": "bash",
+      "added": "2026-01-19"
     }
   ],
   "evolution_history": [
@@ -559,6 +568,11 @@
       "date": "2026-01-19",
       "action": "add_tool",
       "description": "Added journal tool - personal daily journal for reflection and self-discovery with 25 journaling prompts, mood tracking (1-5 scale with visual stats), streak tracking for habit building, quick thought capture, search, random past entry reading, and markdown/JSON export"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "add_tool",
+      "description": "Added expenses tool - personal expense tracker and budget manager with income/expense logging, category-based spending, monthly budgets with warnings, visual progress bars, spending summaries and reports, search, edit/delete, and CSV/JSON export"
     }
   ],
   "config": {
