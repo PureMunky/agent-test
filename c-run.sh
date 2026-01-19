@@ -71,6 +71,17 @@ fi
 # Read credentials content (will be passed via environment, not mounted)
 CREDENTIALS_CONTENT=$(cat "$CREDENTIALS_FILE")
 
+# SSH key for GitHub (optional - needed for git push)
+SSH_KEY_FILE="$SCRIPT_DIR/.agent/ssh/id_ed25519"
+SSH_KEY_CONTENT=""
+if [[ -f "$SSH_KEY_FILE" ]]; then
+    SSH_KEY_CONTENT=$(cat "$SSH_KEY_FILE")
+    echo "SSH key found - git push will be enabled"
+else
+    echo "WARNING: No SSH key found at $SSH_KEY_FILE - git push will fail"
+    echo "To enable push, add your bot SSH private key to .agent/ssh/id_ed25519"
+fi
+
 echo "Starting containerized agent run..."
 echo "Workspace: $SCRIPT_DIR"
 echo "Container filesystem: read-only (except /workspace and /tmp)"
@@ -92,6 +103,7 @@ CONTAINER_ID=$(docker run -d \
     -v "$SCRIPT_DIR:/workspace:rw" \
     -e "HOME=/home/node" \
     -e "CLAUDE_CREDENTIALS=$CREDENTIALS_CONTENT" \
+    -e "SSH_PRIVATE_KEY=$SSH_KEY_CONTENT" \
     -e "GIT_AUTHOR_NAME=Agent Runner" \
     -e "GIT_AUTHOR_EMAIL=agent@local" \
     -e "GIT_COMMITTER_NAME=Agent Runner" \
@@ -103,6 +115,21 @@ CONTAINER_ID=$(docker run -d \
         # Write credentials from environment to file (never touches host filesystem)
         echo "$CLAUDE_CREDENTIALS" > /home/node/.claude/.credentials.json
         unset CLAUDE_CREDENTIALS
+
+        # Set up SSH for GitHub if key was provided
+        if [ -n "$SSH_PRIVATE_KEY" ]; then
+            mkdir -p /home/node/.ssh
+            chmod 700 /home/node/.ssh
+            echo "$SSH_PRIVATE_KEY" > /home/node/.ssh/id_ed25519
+            chmod 600 /home/node/.ssh/id_ed25519
+            unset SSH_PRIVATE_KEY
+            # Configure SSH to trust GitHub host
+            echo "Host github.com
+    StrictHostKeyChecking accept-new
+    IdentityFile /home/node/.ssh/id_ed25519" > /home/node/.ssh/config
+            chmod 600 /home/node/.ssh/config
+        fi
+
         # Configure git to trust the workspace directory
         git config --global --add safe.directory /workspace
         # Run the actual script

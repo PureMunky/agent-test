@@ -7,7 +7,12 @@
       "Bash(tree:*)",
       "Bash(claude --version)",
       "Bash(docker:*)",
-      "Bash(./run-containerized.sh)"
+      "Bash(./run-containerized.sh)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(crontab:*)",
+      "Bash(ls:*)",
+      "Bash(git config:*)"
     ]
   }
 }

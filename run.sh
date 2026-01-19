@@ -30,6 +30,33 @@ if [[ "$1" == "--dry-run" ]]; then
     log "Running in dry-run mode - no changes will be committed"
 fi
 
+# Check for auth expired marker - prevents spamming API when token has expired
+AUTH_EXPIRED_FILE="$SCRIPT_DIR/.agent/auth_expired"
+if [[ -f "$AUTH_EXPIRED_FILE" ]]; then
+    log "SKIPPED: Authentication token has expired."
+    log "Please run 'claude /login' to refresh your token, then remove $AUTH_EXPIRED_FILE"
+    exit 0
+fi
+
+# Check for rate limit marker - prevents spamming API when usage limit reached
+RATE_LIMITED_FILE="$SCRIPT_DIR/.agent/rate_limited"
+if [[ -f "$RATE_LIMITED_FILE" ]]; then
+    # Check if enough time has passed (default: 1 hour)
+    RATE_LIMIT_TIME=$(cat "$RATE_LIMITED_FILE" | head -1)
+    CURRENT_TIME=$(date +%s)
+    RATE_LIMIT_COOLDOWN=3600  # 1 hour in seconds
+
+    if [[ $((CURRENT_TIME - RATE_LIMIT_TIME)) -lt $RATE_LIMIT_COOLDOWN ]]; then
+        REMAINING=$((RATE_LIMIT_COOLDOWN - (CURRENT_TIME - RATE_LIMIT_TIME)))
+        log "SKIPPED: Rate limited. Cooldown remaining: $((REMAINING / 60)) minutes"
+        log "To retry immediately, remove $RATE_LIMITED_FILE"
+        exit 0
+    else
+        log "Rate limit cooldown expired, removing marker and retrying..."
+        rm -f "$RATE_LIMITED_FILE"
+    fi
+fi
+
 log "Starting productivity suite evolution run"
 log "Working directory: $SCRIPT_DIR"
 
@@ -108,9 +135,32 @@ else
 
     # Run the agent
     # The --print flag outputs to stdout, --dangerously-skip-permissions allows autonomous operation
-    claude --print --dangerously-skip-permissions "$AGENT_PROMPT" 2>&1 | tee -a "$LOG_FILE"
+    # Capture output to check for auth errors
+    AGENT_OUTPUT_FILE=$(mktemp)
+    claude --print --dangerously-skip-permissions "$AGENT_PROMPT" 2>&1 | tee -a "$LOG_FILE" "$AGENT_OUTPUT_FILE"
 
     AGENT_EXIT_CODE=${PIPESTATUS[0]}
+
+    # Check for authentication errors to prevent future API spam
+    if grep -q "authentication_error\|OAuth token has expired\|401.*error" "$AGENT_OUTPUT_FILE"; then
+        log "ERROR: Authentication failed - token has expired"
+        log "Creating auth_expired marker to prevent further API calls"
+        date > "$AUTH_EXPIRED_FILE"
+        echo "Token expired at $(date). Run 'claude /login' to refresh." >> "$AUTH_EXPIRED_FILE"
+        rm -f "$AGENT_OUTPUT_FILE"
+        exit 1
+    fi
+
+    # Check for rate limit / usage quota errors
+    if grep -qi "rate.limit\|usage.limit\|quota\|too many requests\|429\|exceeded.*limit\|out of.*tokens\|capacity" "$AGENT_OUTPUT_FILE"; then
+        log "ERROR: Rate/usage limit reached"
+        log "Creating rate_limited marker - will auto-retry in 1 hour"
+        date +%s > "$RATE_LIMITED_FILE"
+        echo "Rate limited at $(date). Will auto-retry after cooldown." >> "$RATE_LIMITED_FILE"
+        rm -f "$AGENT_OUTPUT_FILE"
+        exit 1
+    fi
+    rm -f "$AGENT_OUTPUT_FILE"
 
     if [[ $AGENT_EXIT_CODE -ne 0 ]]; then
         log "WARNING: Agent exited with code $AGENT_EXIT_CODE"
