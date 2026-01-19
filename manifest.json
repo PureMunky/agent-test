@@ -9,8 +9,8 @@
     {
       "name": "pomodoro",
       "path": "tools/pomodoro",
-      "description": "Command-line Pomodoro timer for focused work sessions",
-      "version": "1.0.0",
+      "description": "Enhanced Pomodoro timer with project tracking, pause/resume, statistics, and configurable settings",
+      "version": "2.0.0",
       "category": "time-management",
       "language": "bash",
       "added": "2026-01-17"
@@ -469,6 +469,11 @@
       "date": "2026-01-19",
       "action": "improve",
       "description": "Enhanced quicknotes tool v2.0: added inline #tag support, tag filtering (quicknotes tag #work), tag listing with counts, delete command, export command, and statistics"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "improve",
+      "description": "Enhanced pomodoro tool v2.0: added project tracking, pause/resume functionality, detailed statistics (daily/weekly/by-project), configurable settings (work duration, breaks, auto-start), session history, and visual progress displays"
     }
   ],
   "config": {
