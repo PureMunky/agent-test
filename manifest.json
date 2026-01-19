@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
-  "last_updated": "2026-01-18",
-  "tool_count": 32,
+  "last_updated": "2026-01-19",
+  "tool_count": 33,
   "tools": [
     {
       "name": "pomodoro",
@@ -293,6 +293,15 @@
       "category": "note-taking",
       "language": "bash",
       "added": "2026-01-18"
+    },
+    {
+      "name": "genpass",
+      "path": "tools/genpass",
+      "description": "Secure password and secret generator with multiple formats (PIN, hex, UUID, tokens, passphrases) and built-in vault storage",
+      "version": "1.0.0",
+      "category": "automation",
+      "language": "bash",
+      "added": "2026-01-19"
     }
   ],
   "evolution_history": [
@@ -445,6 +454,11 @@
       "date": "2026-01-18",
       "action": "add_tool",
       "description": "Added contacts tool for professional networking and relationship management with interaction logging, follow-up reminders, tagging, stale contact detection, and export"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "fix",
+      "description": "Registered genpass tool that was missing from manifest - secure password/secret generator with vault storage"
     }
   ],
   "config": {
