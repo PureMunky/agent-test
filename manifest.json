@@ -18,8 +18,8 @@
     {
       "name": "quicknotes",
       "path": "tools/quicknotes",
-      "description": "Fast command-line note capture system",
-      "version": "1.0.0",
+      "description": "Fast command-line note capture with inline #tagging, tag filtering, delete, export, and statistics",
+      "version": "2.0.0",
       "category": "note-taking",
       "language": "bash",
       "added": "2026-01-17"
@@ -464,6 +464,11 @@
       "date": "2026-01-19",
       "action": "improve",
       "description": "Enhanced tasks tool v2.0: added priority levels (high/med/low), due dates with smart display, overdue warnings, filtering (--overdue, --today, --high, --priority), edit/undone commands"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "improve",
+      "description": "Enhanced quicknotes tool v2.0: added inline #tag support, tag filtering (quicknotes tag #work), tag listing with counts, delete command, export command, and statistics"
     }
   ],
   "config": {
