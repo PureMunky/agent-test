@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-19",
-  "tool_count": 35,
+  "tool_count": 36,
   "tools": [
     {
       "name": "pomodoro",
@@ -320,6 +320,15 @@
       "category": "automation",
       "language": "bash",
       "added": "2026-01-19"
+    },
+    {
+      "name": "project-journal",
+      "path": "tools/project-journal",
+      "description": "Project progress tracker with journal entries, milestones, links, status management, search, and markdown export",
+      "version": "1.0.0",
+      "category": "note-taking",
+      "language": "bash",
+      "added": "2026-01-19"
     }
   ],
   "evolution_history": [
@@ -517,6 +526,11 @@
       "date": "2026-01-19",
       "action": "add_tool",
       "description": "Added calc tool - quick calculator and unit converter with math expressions, unit conversions (length, weight, temperature, data sizes, time, volume), date calculations, percentage/tip/split calculators, and calculation history"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "add_tool",
+      "description": "Added project-journal tool - dedicated project progress tracking with journal entries, milestones, links, status management (active/paused/completed/blocked), inline #tags, search across projects, archive system, and markdown export"
     }
   ],
   "config": {
