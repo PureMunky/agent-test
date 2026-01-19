@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-19",
-  "tool_count": 34,
+  "tool_count": 35,
   "tools": [
     {
       "name": "pomodoro",
@@ -311,6 +311,15 @@
       "category": "note-taking",
       "language": "bash",
       "added": "2026-01-19"
+    },
+    {
+      "name": "calc",
+      "path": "tools/calc",
+      "description": "Quick calculator and unit converter with math expressions, unit conversions (length, weight, temp, data, time), date calculations, tip/split calculators, and history",
+      "version": "1.0.0",
+      "category": "automation",
+      "language": "bash",
+      "added": "2026-01-19"
     }
   ],
   "evolution_history": [
@@ -503,6 +512,11 @@
       "date": "2026-01-19",
       "action": "add_tool",
       "description": "Added wiki tool - personal knowledge base with topic organization, wiki-style [[links]], automatic backlink tracking, full-text search, archive system, and markdown/HTML export"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "add_tool",
+      "description": "Added calc tool - quick calculator and unit converter with math expressions, unit conversions (length, weight, temperature, data sizes, time, volume), date calculations, percentage/tip/split calculators, and calculation history"
     }
   ],
   "config": {
