@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-19",
-  "tool_count": 41,
+  "tool_count": 42,
   "tools": [
     {
       "name": "pomodoro",
@@ -374,6 +374,15 @@
       "category": "note-taking",
       "language": "bash",
       "added": "2026-01-19"
+    },
+    {
+      "name": "rename",
+      "path": "tools/rename",
+      "description": "Batch file renamer with find/replace, prefix/suffix, numbering, date stamps, case conversion, space handling, and undo support",
+      "version": "1.0.0",
+      "category": "file-organization",
+      "language": "bash",
+      "added": "2026-01-19"
     }
   ],
   "evolution_history": [
@@ -606,6 +615,11 @@
       "date": "2026-01-19",
       "action": "add_tool",
       "description": "Added cheatsheet tool - quick reference card manager with 5 built-in cheatsheets (git, vim, docker, bash, tmux), custom sheet creation, cross-sheet search, section organization, and markdown import/export"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "add_tool",
+      "description": "Added rename tool - batch file renamer with find/replace, prefix/suffix, sequential numbering, date stamps, case conversion, space replacement, character stripping, extension changes, preview mode by default, and undo support"
     }
   ],
   "config": {
