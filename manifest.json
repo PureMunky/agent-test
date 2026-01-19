@@ -63,8 +63,8 @@
     {
       "name": "meeting-notes",
       "path": "tools/meeting-notes",
-      "description": "Meeting notes template generator with multiple templates, action item tracking, and search",
-      "version": "1.0.0",
+      "description": "Enhanced meeting notes with attendees tracking, meeting series, archive system, markdown/HTML export, statistics, and 9 templates",
+      "version": "2.0.0",
       "category": "note-taking",
       "language": "bash",
       "added": "2026-01-17"
@@ -573,6 +573,11 @@
       "date": "2026-01-19",
       "action": "add_tool",
       "description": "Added expenses tool - personal expense tracker and budget manager with income/expense logging, category-based spending, monthly budgets with warnings, visual progress bars, spending summaries and reports, search, edit/delete, and CSV/JSON export"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "improve",
+      "description": "Enhanced meeting-notes tool v2.0: added attendees tracking, meeting series for recurring meetings, archive/unarchive system, markdown/HTML export, complete action items from CLI, statistics dashboard, weekly sync and interview templates, and automatic v1 migration"
     }
   ],
   "config": {
