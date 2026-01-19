@@ -4,7 +4,7 @@
   "description": "A self-evolving productivity suite managed by AI agents",
   "created": "2026-01-17",
   "last_updated": "2026-01-19",
-  "tool_count": 39,
+  "tool_count": 40,
   "tools": [
     {
       "name": "pomodoro",
@@ -356,6 +356,15 @@
       "category": "task-tracking",
       "language": "bash",
       "added": "2026-01-19"
+    },
+    {
+      "name": "checklist",
+      "path": "tools/checklist",
+      "description": "Reusable checklist manager for workflows like code reviews, deployments, and routines with built-in templates, interactive mode, and completion tracking",
+      "version": "1.0.0",
+      "category": "task-tracking",
+      "language": "bash",
+      "added": "2026-01-19"
     }
   ],
   "evolution_history": [
@@ -578,6 +587,11 @@
       "date": "2026-01-19",
       "action": "improve",
       "description": "Enhanced meeting-notes tool v2.0: added attendees tracking, meeting series for recurring meetings, archive/unarchive system, markdown/HTML export, complete action items from CLI, statistics dashboard, weekly sync and interview templates, and automatic v1 migration"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "add_tool",
+      "description": "Added checklist tool - reusable checklist manager for repetitive workflows (code reviews, deployments, routines) with 6 built-in templates, interactive run mode, progress tracking, completion history, markdown import/export, and partial name matching"
     }
   ],
   "config": {
