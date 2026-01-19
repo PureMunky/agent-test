@@ -36,8 +36,8 @@
     {
       "name": "timelog",
       "path": "tools/timelog",
-      "description": "Time tracking tool for logging hours on projects and activities",
-      "version": "1.0.0",
+      "description": "Enhanced time tracker with pause/resume, billable hours with rates, tags, weekly summary, edit/delete, export, and filtering",
+      "version": "2.0.0",
       "category": "time-management",
       "language": "bash",
       "added": "2026-01-17"
@@ -479,6 +479,11 @@
       "date": "2026-01-19",
       "action": "improve",
       "description": "Enhanced habits tool v2.0: added weekly targets (--weekly N), check-in notes (--note), detailed statistics (completion rates, best days), export/import for data portability, and automatic migration from v1"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "improve",
+      "description": "Enhanced timelog tool v2.0: added pause/resume for interruptions, billable hours tracking with configurable hourly rates, inline #tag support, weekly summary with visual progress bar, edit/delete entries, filtering by project/tag/date, JSON/CSV export, and statistics"
     }
   ],
   "config": {
