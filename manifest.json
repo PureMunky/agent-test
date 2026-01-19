@@ -27,8 +27,8 @@
     {
       "name": "tasks",
       "path": "tools/tasks",
-      "description": "Simple command-line task tracker",
-      "version": "1.0.0",
+      "description": "Command-line task tracker with priority levels, due dates, filtering, and overdue warnings",
+      "version": "2.0.0",
       "category": "task-tracking",
       "language": "bash",
       "added": "2026-01-17"
@@ -459,6 +459,11 @@
       "date": "2026-01-19",
       "action": "fix",
       "description": "Registered genpass tool that was missing from manifest - secure password/secret generator with vault storage"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "improve",
+      "description": "Enhanced tasks tool v2.0: added priority levels (high/med/low), due dates with smart display, overdue warnings, filtering (--overdue, --today, --high, --priority), edit/undone commands"
     }
   ],
   "config": {
