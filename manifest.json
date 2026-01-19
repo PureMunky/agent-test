@@ -45,8 +45,8 @@
     {
       "name": "habits",
       "path": "tools/habits",
-      "description": "Daily habit tracker with streak counting and visual progress grid",
-      "version": "1.0.0",
+      "description": "Enhanced habit tracker with weekly targets, check-in notes, statistics, streaks, and export/import",
+      "version": "2.0.0",
       "category": "task-tracking",
       "language": "bash",
       "added": "2026-01-17"
@@ -474,6 +474,11 @@
       "date": "2026-01-19",
       "action": "improve",
       "description": "Enhanced pomodoro tool v2.0: added project tracking, pause/resume functionality, detailed statistics (daily/weekly/by-project), configurable settings (work duration, breaks, auto-start), session history, and visual progress displays"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "improve",
+      "description": "Enhanced habits tool v2.0: added weekly targets (--weekly N), check-in notes (--note), detailed statistics (completion rates, best days), export/import for data portability, and automatic migration from v1"
     }
   ],
   "config": {
