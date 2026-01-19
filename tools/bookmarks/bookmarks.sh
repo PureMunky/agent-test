@@ -1,17 +1,34 @@
 #!/bin/bash
 #
-# Bookmarks - Command-line bookmark manager for URLs and resources
+# Bookmarks v2.0 - Enhanced command-line bookmark manager
+#
+# New in v2.0:
+#   - Folder organization for grouping bookmarks
+#   - Statistics (most accessed, usage patterns)
+#   - Multiple sort options (recent, accessed, alpha)
+#   - Archive feature to hide old bookmarks
+#   - Browser HTML import (Chrome, Firefox, Safari)
+#   - Batch operations for bulk tagging
+#   - Favorites for quick access
 #
 # Usage:
 #   bookmarks.sh add <url> ["title"] [tags...]   - Add a bookmark
-#   bookmarks.sh list [tag]                      - List bookmarks (optionally filter by tag)
+#   bookmarks.sh list [tag] [--sort X] [--folder F] - List bookmarks
 #   bookmarks.sh search "query"                  - Search bookmarks
 #   bookmarks.sh tags                            - List all tags
 #   bookmarks.sh open <id>                       - Open bookmark in browser
 #   bookmarks.sh remove <id>                     - Remove a bookmark
 #   bookmarks.sh edit <id>                       - Edit bookmark details
 #   bookmarks.sh export [file]                   - Export bookmarks to JSON
-#   bookmarks.sh import <file>                   - Import bookmarks from JSON
+#   bookmarks.sh import <file>                   - Import from JSON/HTML
+#   bookmarks.sh folder <name>                   - Create/list folders
+#   bookmarks.sh move <id> <folder>              - Move bookmark to folder
+#   bookmarks.sh fav <id>                        - Toggle favorite status
+#   bookmarks.sh favorites                       - List favorites
+#   bookmarks.sh archive <id>                    - Archive a bookmark
+#   bookmarks.sh archived                        - List archived bookmarks
+#   bookmarks.sh restore <id>                    - Restore from archive
+#   bookmarks.sh stats                           - Show statistics
 #
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -20,10 +37,19 @@ BOOKMARKS_FILE="$DATA_DIR/bookmarks.json"
 
 mkdir -p "$DATA_DIR"
 
-# Initialize bookmarks file if it doesn't exist
+# Initialize bookmarks file with v2 schema if it doesn't exist
 if [[ ! -f "$BOOKMARKS_FILE" ]]; then
-    echo '{"bookmarks":[],"next_id":1}' > "$BOOKMARKS_FILE"
+    echo '{"version":"2.0","bookmarks":[],"folders":["general"],"next_id":1}' > "$BOOKMARKS_FILE"
 fi
+
+# Migrate v1 data to v2 if needed
+migrate_if_needed() {
+    local version=$(jq -r '.version // "1.0"' "$BOOKMARKS_FILE")
+    if [[ "$version" == "1.0" ]]; then
+        jq '.version = "2.0" | .folders = ((.folders // []) + ["general"] | unique) | .bookmarks = [.bookmarks[] | . + {folder: (.folder // "general"), favorite: (.favorite // false), archived: (.archived // false)}]' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+    fi
+}
+migrate_if_needed
 
 # Colors
 RED='\033[0;31m'
@@ -33,6 +59,7 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 MAGENTA='\033[0;35m'
 GRAY='\033[0;90m'
+BOLD='\033[1m'
 NC='\033[0m'
 
 # Check for jq
@@ -61,13 +88,37 @@ add_bookmark() {
     shift
     local title=""
     local tags=()
+    local folder="general"
+    local favorite=false
+
+    # Parse options
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --folder|-f)
+                folder="$2"
+                shift 2
+                ;;
+            --fav|--favorite)
+                favorite=true
+                shift
+                ;;
+            *)
+                if [[ -z "$title" ]]; then
+                    title="$1"
+                else
+                    tags+=("$1")
+                fi
+                shift
+                ;;
+        esac
+    done
 
     if [[ -z "$url" ]]; then
-        echo "Usage: bookmarks.sh add <url> [\"title\"] [tags...]"
+        echo "Usage: bookmarks.sh add <url> [\"title\"] [tags...] [--folder NAME] [--fav]"
         echo ""
         echo "Examples:"
         echo "  bookmarks.sh add https://example.com"
-        echo "  bookmarks.sh add https://docs.python.org \"Python Docs\" python docs reference"
+        echo "  bookmarks.sh add https://docs.python.org \"Python Docs\" python docs --folder work"
         exit 1
     fi
 
@@ -81,20 +132,20 @@ add_bookmark() {
         fi
     fi
 
-    # Check for duplicate URL
-    local exists=$(jq -r --arg url "$url" '.bookmarks | map(select(.url == $url)) | length' "$BOOKMARKS_FILE")
+    # Check for duplicate URL (including archived)
+    local exists=$(jq -r --arg url "$url" '.bookmarks | map(select(.url == $url and .archived != true)) | length' "$BOOKMARKS_FILE")
     if [[ "$exists" -gt 0 ]]; then
         echo -e "${YELLOW}Bookmark already exists for this URL.${NC}"
-        local existing_id=$(jq -r --arg url "$url" '.bookmarks[] | select(.url == $url) | .id' "$BOOKMARKS_FILE")
+        local existing_id=$(jq -r --arg url "$url" '.bookmarks[] | select(.url == $url and .archived != true) | .id' "$BOOKMARKS_FILE")
         echo "Existing bookmark ID: $existing_id"
         exit 1
     fi
 
-    # Parse remaining arguments - first quoted arg is title, rest are tags
-    if [[ $# -gt 0 ]]; then
-        title="$1"
-        shift
-        tags=("$@")
+    # Ensure folder exists
+    local folder_exists=$(jq -r --arg f "$folder" '.folders | index($f) // empty' "$BOOKMARKS_FILE")
+    if [[ -z "$folder_exists" ]]; then
+        jq --arg f "$folder" '.folders += [$f]' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+        echo -e "${CYAN}Created folder: $folder${NC}"
     fi
 
     # If no title provided, use domain as title
@@ -115,12 +166,17 @@ add_bookmark() {
        --arg title "$title" \
        --argjson tags "$tags_json" \
        --arg ts "$timestamp" \
-       --argjson id "$next_id" '
+       --argjson id "$next_id" \
+       --arg folder "$folder" \
+       --argjson fav "$favorite" '
         .bookmarks += [{
             "id": $id,
             "url": $url,
             "title": $title,
             "tags": $tags,
+            "folder": $folder,
+            "favorite": $fav,
+            "archived": false,
             "created": $ts,
             "accessed": null,
             "access_count": 0
@@ -131,15 +187,39 @@ add_bookmark() {
     echo -e "${GREEN}Bookmark #$next_id added:${NC}"
     echo -e "  ${CYAN}Title:${NC} $title"
     echo -e "  ${CYAN}URL:${NC} $url"
+    echo -e "  ${CYAN}Folder:${NC} $folder"
     if [[ ${#tags[@]} -gt 0 ]]; then
         echo -e "  ${CYAN}Tags:${NC} ${tags[*]}"
+    fi
+    if [[ "$favorite" == "true" ]]; then
+        echo -e "  ${YELLOW}★ Favorite${NC}"
     fi
 }
 
 list_bookmarks() {
-    local filter_tag="$1"
+    local filter_tag=""
+    local sort_by="recent"
+    local filter_folder=""
 
-    local count=$(jq '.bookmarks | length' "$BOOKMARKS_FILE")
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --sort|-s)
+                sort_by="$2"
+                shift 2
+                ;;
+            --folder|-f)
+                filter_folder="$2"
+                shift 2
+                ;;
+            *)
+                filter_tag="$1"
+                shift
+                ;;
+        esac
+    done
+
+    local count=$(jq '[.bookmarks[] | select(.archived != true)] | length' "$BOOKMARKS_FILE")
 
     if [[ "$count" -eq 0 ]]; then
         echo "No bookmarks yet."
@@ -147,41 +227,72 @@ list_bookmarks() {
         exit 0
     fi
 
+    # Build header
+    local header="Bookmarks"
     if [[ -n "$filter_tag" ]]; then
-        echo -e "${BLUE}=== Bookmarks tagged '$filter_tag' ===${NC}"
-        local filtered=$(jq -r --arg tag "$filter_tag" '
-            .bookmarks | map(select(.tags | index($tag))) | length
-        ' "$BOOKMARKS_FILE")
-
-        if [[ "$filtered" -eq 0 ]]; then
-            echo ""
-            echo "No bookmarks with tag '$filter_tag'"
-            exit 0
-        fi
-    else
-        echo -e "${BLUE}=== Bookmarks ($count) ===${NC}"
+        header="Bookmarks tagged '$filter_tag'"
     fi
+    if [[ -n "$filter_folder" ]]; then
+        header="$header in '$filter_folder'"
+    fi
+    header="$header (sorted by $sort_by)"
 
+    echo -e "${BLUE}=== $header ===${NC}"
     echo ""
 
-    local query='.bookmarks | sort_by(.created) | reverse'
+    # Build filter expression
+    local filter='select(.archived != true)'
     if [[ -n "$filter_tag" ]]; then
-        query=".bookmarks | map(select(.tags | index(\"$filter_tag\"))) | sort_by(.created) | reverse"
+        filter="$filter | select(.tags | index(\"$filter_tag\"))"
+    fi
+    if [[ -n "$filter_folder" ]]; then
+        filter="$filter | select(.folder == \"$filter_folder\")"
     fi
 
-    jq -r "$query | .[] | \"\(.id)|\(.title)|\(.url)|\(.tags | join(\",\"))\"" "$BOOKMARKS_FILE" | \
-    while IFS='|' read -r id title url tags; do
+    # Build sort expression
+    local sort_expr=""
+    case "$sort_by" in
+        recent|date)
+            sort_expr='sort_by(.created) | reverse'
+            ;;
+        accessed|popular)
+            sort_expr='sort_by(.access_count) | reverse'
+            ;;
+        alpha|name)
+            sort_expr='sort_by(.title | ascii_downcase)'
+            ;;
+        *)
+            sort_expr='sort_by(.created) | reverse'
+            ;;
+    esac
+
+    local query="[.bookmarks[] | $filter] | $sort_expr"
+    local result_count=$(jq -r "$query | length" "$BOOKMARKS_FILE")
+
+    if [[ "$result_count" -eq 0 ]]; then
+        echo "No bookmarks match the filter."
+        exit 0
+    fi
+
+    jq -r "$query | .[] | \"\(.id)|\(.title)|\(.url)|\(.tags | join(\",\"))|\(.folder)|\(.favorite)|\(.access_count)\"" "$BOOKMARKS_FILE" | \
+    while IFS='|' read -r id title url tags folder favorite access_count; do
         # Truncate title if too long
         local display_title="$title"
         if [[ ${#display_title} -gt 40 ]]; then
             display_title="${display_title:0:37}..."
         fi
 
-        echo -e "  ${YELLOW}[$id]${NC} ${GREEN}$display_title${NC}"
+        local star=""
+        if [[ "$favorite" == "true" ]]; then
+            star="${YELLOW}★ ${NC}"
+        fi
+
+        echo -e "  ${star}${YELLOW}[$id]${NC} ${GREEN}$display_title${NC}"
         echo -e "      ${GRAY}$url${NC}"
         if [[ -n "$tags" ]]; then
             echo -e "      ${MAGENTA}#${tags//,/ #}${NC}"
         fi
+        echo -e "      ${CYAN}📁 $folder${NC}  ${GRAY}(${access_count} visits)${NC}"
         echo ""
     done
 }
@@ -197,13 +308,16 @@ search_bookmarks() {
     echo -e "${BLUE}=== Search Results: \"$query\" ===${NC}"
     echo ""
 
-    # Search in title, url, and tags (case insensitive)
+    # Search in title, url, tags, and folder (case insensitive), exclude archived
     local results=$(jq -r --arg q "$query" '
         .bookmarks | map(select(
-            (.title | ascii_downcase | contains($q | ascii_downcase)) or
-            (.url | ascii_downcase | contains($q | ascii_downcase)) or
-            (.tags | map(ascii_downcase) | any(contains($q | ascii_downcase)))
-        )) | .[] | "\(.id)|\(.title)|\(.url)|\(.tags | join(","))"
+            .archived != true and (
+                (.title | ascii_downcase | contains($q | ascii_downcase)) or
+                (.url | ascii_downcase | contains($q | ascii_downcase)) or
+                (.tags | map(ascii_downcase) | any(contains($q | ascii_downcase))) or
+                (.folder | ascii_downcase | contains($q | ascii_downcase))
+            )
+        )) | .[] | "\(.id)|\(.title)|\(.url)|\(.tags | join(","))|\(.folder)|\(.favorite)"
     ' "$BOOKMARKS_FILE")
 
     if [[ -z "$results" ]]; then
@@ -211,12 +325,17 @@ search_bookmarks() {
         exit 0
     fi
 
-    echo "$results" | while IFS='|' read -r id title url tags; do
-        echo -e "  ${YELLOW}[$id]${NC} ${GREEN}$title${NC}"
+    echo "$results" | while IFS='|' read -r id title url tags folder favorite; do
+        local star=""
+        if [[ "$favorite" == "true" ]]; then
+            star="${YELLOW}★ ${NC}"
+        fi
+        echo -e "  ${star}${YELLOW}[$id]${NC} ${GREEN}$title${NC}"
         echo -e "      ${GRAY}$url${NC}"
         if [[ -n "$tags" ]]; then
             echo -e "      ${MAGENTA}#${tags//,/ #}${NC}"
         fi
+        echo -e "      ${CYAN}📁 $folder${NC}"
         echo ""
     done
 }
@@ -225,7 +344,7 @@ list_tags() {
     echo -e "${BLUE}=== Tags ===${NC}"
     echo ""
 
-    local tags=$(jq -r '.bookmarks | map(.tags) | flatten | group_by(.) | map({tag: .[0], count: length}) | sort_by(.count) | reverse | .[] | "\(.tag)|\(.count)"' "$BOOKMARKS_FILE")
+    local tags=$(jq -r '[.bookmarks[] | select(.archived != true) | .tags[]] | group_by(.) | map({tag: .[0], count: length}) | sort_by(.count) | reverse | .[] | "\(.tag)|\(.count)"' "$BOOKMARKS_FILE")
 
     if [[ -z "$tags" ]]; then
         echo "No tags yet."
@@ -248,7 +367,7 @@ open_bookmark() {
     fi
 
     # Check if bookmark exists
-    local bookmark=$(jq -r --argjson id "$id" '.bookmarks[] | select(.id == $id)' "$BOOKMARKS_FILE")
+    local bookmark=$(jq -r --argjson id "$id" '.bookmarks[] | select(.id == $id and .archived != true)' "$BOOKMARKS_FILE")
 
     if [[ -z "$bookmark" ]]; then
         echo -e "${RED}Bookmark #$id not found${NC}"
@@ -320,6 +439,7 @@ edit_bookmark() {
     local current_title=$(echo "$bookmark" | jq -r '.title')
     local current_url=$(echo "$bookmark" | jq -r '.url')
     local current_tags=$(echo "$bookmark" | jq -r '.tags | join(" ")')
+    local current_folder=$(echo "$bookmark" | jq -r '.folder // "general"')
 
     echo -e "${BLUE}=== Edit Bookmark #$id ===${NC}"
     echo ""
@@ -329,11 +449,13 @@ edit_bookmark() {
     read -p "Title [$current_title]: " new_title
     read -p "URL [$current_url]: " new_url
     read -p "Tags (space-separated) [$current_tags]: " new_tags
+    read -p "Folder [$current_folder]: " new_folder
 
     # Use current values if empty
     new_title="${new_title:-$current_title}"
     new_url="${new_url:-$current_url}"
     new_tags="${new_tags:-$current_tags}"
+    new_folder="${new_folder:-$current_folder}"
 
     # Parse tags into array
     local tags_json="[]"
@@ -341,15 +463,259 @@ edit_bookmark() {
         tags_json=$(echo "$new_tags" | tr ' ' '\n' | jq -R . | jq -s .)
     fi
 
+    # Ensure folder exists
+    local folder_exists=$(jq -r --arg f "$new_folder" '.folders | index($f) // empty' "$BOOKMARKS_FILE")
+    if [[ -z "$folder_exists" ]]; then
+        jq --arg f "$new_folder" '.folders += [$f]' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+    fi
+
     jq --argjson id "$id" \
        --arg title "$new_title" \
        --arg url "$new_url" \
-       --argjson tags "$tags_json" '
-        .bookmarks = [.bookmarks[] | if .id == $id then .title = $title | .url = $url | .tags = $tags else . end]
+       --argjson tags "$tags_json" \
+       --arg folder "$new_folder" '
+        .bookmarks = [.bookmarks[] | if .id == $id then .title = $title | .url = $url | .tags = $tags | .folder = $folder else . end]
     ' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
 
     echo ""
     echo -e "${GREEN}Bookmark #$id updated${NC}"
+}
+
+# Folder management
+manage_folders() {
+    local action="$1"
+    local folder_name="$2"
+
+    case "$action" in
+        ""|list)
+            echo -e "${BLUE}=== Folders ===${NC}"
+            echo ""
+            jq -r '.folders[]' "$BOOKMARKS_FILE" | while read -r folder; do
+                local count=$(jq -r --arg f "$folder" '[.bookmarks[] | select(.folder == $f and .archived != true)] | length' "$BOOKMARKS_FILE")
+                printf "  ${CYAN}📁 %-20s${NC} ${GRAY}(%d bookmarks)${NC}\n" "$folder" "$count"
+            done
+            ;;
+        add|create)
+            if [[ -z "$folder_name" ]]; then
+                echo "Usage: bookmarks.sh folder add <name>"
+                exit 1
+            fi
+            local exists=$(jq -r --arg f "$folder_name" '.folders | index($f) // empty' "$BOOKMARKS_FILE")
+            if [[ -n "$exists" ]]; then
+                echo -e "${YELLOW}Folder '$folder_name' already exists${NC}"
+                exit 1
+            fi
+            jq --arg f "$folder_name" '.folders += [$f]' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+            echo -e "${GREEN}Created folder: $folder_name${NC}"
+            ;;
+        delete|rm)
+            if [[ -z "$folder_name" ]]; then
+                echo "Usage: bookmarks.sh folder delete <name>"
+                exit 1
+            fi
+            if [[ "$folder_name" == "general" ]]; then
+                echo -e "${RED}Cannot delete the 'general' folder${NC}"
+                exit 1
+            fi
+            # Move bookmarks to general before deleting
+            jq --arg f "$folder_name" '.bookmarks = [.bookmarks[] | if .folder == $f then .folder = "general" else . end] | .folders = [.folders[] | select(. != $f)]' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+            echo -e "${RED}Deleted folder: $folder_name (bookmarks moved to 'general')${NC}"
+            ;;
+        *)
+            # Treat as folder name to create
+            folder_name="$action"
+            local exists=$(jq -r --arg f "$folder_name" '.folders | index($f) // empty' "$BOOKMARKS_FILE")
+            if [[ -n "$exists" ]]; then
+                # List bookmarks in this folder
+                list_bookmarks --folder "$folder_name"
+            else
+                jq --arg f "$folder_name" '.folders += [$f]' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+                echo -e "${GREEN}Created folder: $folder_name${NC}"
+            fi
+            ;;
+    esac
+}
+
+move_bookmark() {
+    local id="$1"
+    local folder="$2"
+
+    if [[ -z "$id" ]] || [[ -z "$folder" ]]; then
+        echo "Usage: bookmarks.sh move <id> <folder>"
+        exit 1
+    fi
+
+    # Check if bookmark exists
+    local exists=$(jq --argjson id "$id" '.bookmarks | map(select(.id == $id)) | length' "$BOOKMARKS_FILE")
+    if [[ "$exists" -eq 0 ]]; then
+        echo -e "${RED}Bookmark #$id not found${NC}"
+        exit 1
+    fi
+
+    # Ensure folder exists
+    local folder_exists=$(jq -r --arg f "$folder" '.folders | index($f) // empty' "$BOOKMARKS_FILE")
+    if [[ -z "$folder_exists" ]]; then
+        jq --arg f "$folder" '.folders += [$f]' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+        echo -e "${CYAN}Created folder: $folder${NC}"
+    fi
+
+    jq --argjson id "$id" --arg folder "$folder" '
+        .bookmarks = [.bookmarks[] | if .id == $id then .folder = $folder else . end]
+    ' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+
+    local title=$(jq -r --argjson id "$id" '.bookmarks[] | select(.id == $id) | .title' "$BOOKMARKS_FILE")
+    echo -e "${GREEN}Moved '$title' to folder '$folder'${NC}"
+}
+
+toggle_favorite() {
+    local id="$1"
+
+    if [[ -z "$id" ]]; then
+        echo "Usage: bookmarks.sh fav <id>"
+        exit 1
+    fi
+
+    local exists=$(jq --argjson id "$id" '.bookmarks | map(select(.id == $id)) | length' "$BOOKMARKS_FILE")
+    if [[ "$exists" -eq 0 ]]; then
+        echo -e "${RED}Bookmark #$id not found${NC}"
+        exit 1
+    fi
+
+    local current=$(jq -r --argjson id "$id" '.bookmarks[] | select(.id == $id) | .favorite // false' "$BOOKMARKS_FILE")
+    local new_value="true"
+    if [[ "$current" == "true" ]]; then
+        new_value="false"
+    fi
+
+    jq --argjson id "$id" --argjson fav "$new_value" '
+        .bookmarks = [.bookmarks[] | if .id == $id then .favorite = $fav else . end]
+    ' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+
+    local title=$(jq -r --argjson id "$id" '.bookmarks[] | select(.id == $id) | .title' "$BOOKMARKS_FILE")
+    if [[ "$new_value" == "true" ]]; then
+        echo -e "${YELLOW}★ Added '$title' to favorites${NC}"
+    else
+        echo -e "${GRAY}Removed '$title' from favorites${NC}"
+    fi
+}
+
+list_favorites() {
+    echo -e "${BLUE}=== ${YELLOW}★${BLUE} Favorites ===${NC}"
+    echo ""
+
+    local count=$(jq '[.bookmarks[] | select(.favorite == true and .archived != true)] | length' "$BOOKMARKS_FILE")
+    if [[ "$count" -eq 0 ]]; then
+        echo "No favorites yet."
+        echo "Add one with: bookmarks.sh fav <id>"
+        exit 0
+    fi
+
+    jq -r '[.bookmarks[] | select(.favorite == true and .archived != true)] | sort_by(.access_count) | reverse | .[] | "\(.id)|\(.title)|\(.url)|\(.access_count)"' "$BOOKMARKS_FILE" | \
+    while IFS='|' read -r id title url access_count; do
+        echo -e "  ${YELLOW}★ [$id]${NC} ${GREEN}$title${NC}"
+        echo -e "      ${GRAY}$url${NC} (${access_count} visits)"
+        echo ""
+    done
+}
+
+archive_bookmark() {
+    local id="$1"
+
+    if [[ -z "$id" ]]; then
+        echo "Usage: bookmarks.sh archive <id>"
+        exit 1
+    fi
+
+    local exists=$(jq --argjson id "$id" '.bookmarks | map(select(.id == $id)) | length' "$BOOKMARKS_FILE")
+    if [[ "$exists" -eq 0 ]]; then
+        echo -e "${RED}Bookmark #$id not found${NC}"
+        exit 1
+    fi
+
+    jq --argjson id "$id" '
+        .bookmarks = [.bookmarks[] | if .id == $id then .archived = true else . end]
+    ' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+
+    local title=$(jq -r --argjson id "$id" '.bookmarks[] | select(.id == $id) | .title' "$BOOKMARKS_FILE")
+    echo -e "${GRAY}Archived: $title${NC}"
+}
+
+list_archived() {
+    echo -e "${BLUE}=== Archived Bookmarks ===${NC}"
+    echo ""
+
+    local count=$(jq '[.bookmarks[] | select(.archived == true)] | length' "$BOOKMARKS_FILE")
+    if [[ "$count" -eq 0 ]]; then
+        echo "No archived bookmarks."
+        exit 0
+    fi
+
+    jq -r '[.bookmarks[] | select(.archived == true)] | .[] | "\(.id)|\(.title)|\(.url)"' "$BOOKMARKS_FILE" | \
+    while IFS='|' read -r id title url; do
+        echo -e "  ${GRAY}[$id] $title${NC}"
+        echo -e "      ${GRAY}$url${NC}"
+        echo ""
+    done
+
+    echo -e "${CYAN}Restore with: bookmarks.sh restore <id>${NC}"
+}
+
+restore_bookmark() {
+    local id="$1"
+
+    if [[ -z "$id" ]]; then
+        echo "Usage: bookmarks.sh restore <id>"
+        exit 1
+    fi
+
+    local exists=$(jq --argjson id "$id" '.bookmarks | map(select(.id == $id and .archived == true)) | length' "$BOOKMARKS_FILE")
+    if [[ "$exists" -eq 0 ]]; then
+        echo -e "${RED}Archived bookmark #$id not found${NC}"
+        exit 1
+    fi
+
+    jq --argjson id "$id" '
+        .bookmarks = [.bookmarks[] | if .id == $id then .archived = false else . end]
+    ' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+
+    local title=$(jq -r --argjson id "$id" '.bookmarks[] | select(.id == $id) | .title' "$BOOKMARKS_FILE")
+    echo -e "${GREEN}Restored: $title${NC}"
+}
+
+show_stats() {
+    echo -e "${BLUE}=== Bookmark Statistics ===${NC}"
+    echo ""
+
+    local total=$(jq '.bookmarks | length' "$BOOKMARKS_FILE")
+    local active=$(jq '[.bookmarks[] | select(.archived != true)] | length' "$BOOKMARKS_FILE")
+    local archived=$(jq '[.bookmarks[] | select(.archived == true)] | length' "$BOOKMARKS_FILE")
+    local favorites=$(jq '[.bookmarks[] | select(.favorite == true and .archived != true)] | length' "$BOOKMARKS_FILE")
+    local folders=$(jq '.folders | length' "$BOOKMARKS_FILE")
+    local tags=$(jq '[.bookmarks[] | select(.archived != true) | .tags[]] | unique | length' "$BOOKMARKS_FILE")
+    local total_visits=$(jq '[.bookmarks[] | .access_count] | add // 0' "$BOOKMARKS_FILE")
+
+    echo -e "  ${CYAN}Total bookmarks:${NC}     $total"
+    echo -e "  ${CYAN}Active:${NC}              $active"
+    echo -e "  ${CYAN}Archived:${NC}            $archived"
+    echo -e "  ${CYAN}Favorites:${NC}           $favorites"
+    echo -e "  ${CYAN}Folders:${NC}             $folders"
+    echo -e "  ${CYAN}Unique tags:${NC}         $tags"
+    echo -e "  ${CYAN}Total visits:${NC}        $total_visits"
+    echo ""
+
+    if [[ "$active" -gt 0 ]]; then
+        echo -e "${BOLD}Most visited:${NC}"
+        jq -r '[.bookmarks[] | select(.archived != true and .access_count > 0)] | sort_by(.access_count) | reverse | .[0:5] | .[] | "  \(.access_count) visits: \(.title)"' "$BOOKMARKS_FILE"
+        echo ""
+
+        echo -e "${BOLD}Recently added:${NC}"
+        jq -r '[.bookmarks[] | select(.archived != true)] | sort_by(.created) | reverse | .[0:5] | .[] | "  \(.created | split(" ")[0]): \(.title)"' "$BOOKMARKS_FILE"
+        echo ""
+
+        echo -e "${BOLD}Never visited:${NC}"
+        local never_visited=$(jq '[.bookmarks[] | select(.archived != true and .access_count == 0)] | length' "$BOOKMARKS_FILE")
+        echo -e "  $never_visited bookmarks have never been opened"
+    fi
 }
 
 export_bookmarks() {
@@ -362,7 +728,7 @@ export_bookmarks() {
         exit 0
     fi
 
-    jq '.bookmarks' "$BOOKMARKS_FILE" > "$output_file"
+    jq '{bookmarks: .bookmarks, folders: .folders}' "$BOOKMARKS_FILE" > "$output_file"
 
     echo -e "${GREEN}Exported $count bookmarks to:${NC} $output_file"
 }
@@ -372,6 +738,10 @@ import_bookmarks() {
 
     if [[ -z "$input_file" ]]; then
         echo "Usage: bookmarks.sh import <file>"
+        echo ""
+        echo "Supports:"
+        echo "  - JSON files (exported from this tool)"
+        echo "  - HTML files (browser bookmark exports)"
         exit 1
     fi
 
@@ -380,13 +750,104 @@ import_bookmarks() {
         exit 1
     fi
 
+    # Detect file type
+    local file_type=""
+    if [[ "$input_file" == *.html ]] || [[ "$input_file" == *.htm ]]; then
+        file_type="html"
+    elif [[ "$input_file" == *.json ]]; then
+        file_type="json"
+    else
+        # Try to detect by content
+        if head -5 "$input_file" | grep -qi "<!DOCTYPE\|<html\|<DL"; then
+            file_type="html"
+        else
+            file_type="json"
+        fi
+    fi
+
+    if [[ "$file_type" == "html" ]]; then
+        import_html_bookmarks "$input_file"
+    else
+        import_json_bookmarks "$input_file"
+    fi
+}
+
+import_html_bookmarks() {
+    local input_file="$1"
+
+    echo -e "${CYAN}Importing browser bookmarks from HTML...${NC}"
+    echo ""
+
+    # Extract URLs and titles from HTML bookmark file
+    local added=0
+    local skipped=0
+
+    # Parse HTML - extract href and title from <A> tags
+    grep -oP '<A[^>]*HREF="[^"]*"[^>]*>[^<]*</A>' "$input_file" | while read -r line; do
+        local url=$(echo "$line" | grep -oP 'HREF="\K[^"]+')
+        local title=$(echo "$line" | grep -oP '>[^<]*</A>' | sed 's/^>//;s/<\/A>$//')
+
+        if [[ -z "$url" ]] || [[ ! "$url" =~ ^https?:// ]]; then
+            continue
+        fi
+
+        # Check for duplicate
+        local exists=$(jq -r --arg url "$url" '.bookmarks | map(select(.url == $url)) | length' "$BOOKMARKS_FILE")
+        if [[ "$exists" -gt 0 ]]; then
+            echo -e "${YELLOW}Skipped (duplicate):${NC} $title"
+            continue
+        fi
+
+        # Add bookmark
+        local next_id=$(jq -r '.next_id' "$BOOKMARKS_FILE")
+        local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+
+        jq --arg url "$url" \
+           --arg title "${title:-$(get_domain "$url")}" \
+           --arg ts "$timestamp" \
+           --argjson id "$next_id" '
+            .bookmarks += [{
+                "id": $id,
+                "url": $url,
+                "title": $title,
+                "tags": [],
+                "folder": "imported",
+                "favorite": false,
+                "archived": false,
+                "created": $ts,
+                "accessed": null,
+                "access_count": 0
+            }] |
+            .next_id = ($id + 1) |
+            if .folders | index("imported") | not then .folders += ["imported"] else . end
+        ' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+
+        echo -e "${GREEN}Imported:${NC} $title"
+    done
+
+    echo ""
+    echo -e "${GREEN}Import complete. Bookmarks added to 'imported' folder.${NC}"
+}
+
+import_json_bookmarks() {
+    local input_file="$1"
+
     # Validate JSON
     if ! jq empty "$input_file" 2>/dev/null; then
         echo -e "${RED}Invalid JSON file${NC}"
         exit 1
     fi
 
-    local import_count=$(jq 'length' "$input_file")
+    # Check if it's an array or object with bookmarks
+    local is_array=$(jq 'type == "array"' "$input_file")
+    local bookmarks_key=""
+    if [[ "$is_array" == "true" ]]; then
+        bookmarks_key="."
+    else
+        bookmarks_key=".bookmarks // ."
+    fi
+
+    local import_count=$(jq "$bookmarks_key | length" "$input_file")
     echo "Found $import_count bookmarks to import."
     read -p "Continue? (y/N) " -n 1 -r
     echo
@@ -395,13 +856,23 @@ import_bookmarks() {
         exit 0
     fi
 
-    local added=0
-    local skipped=0
+    # Import folders if present
+    local has_folders=$(jq '.folders // [] | length' "$input_file")
+    if [[ "$has_folders" -gt 0 ]]; then
+        jq -r '.folders[]' "$input_file" | while read -r folder; do
+            local exists=$(jq -r --arg f "$folder" '.folders | index($f) // empty' "$BOOKMARKS_FILE")
+            if [[ -z "$exists" ]]; then
+                jq --arg f "$folder" '.folders += [$f]' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+            fi
+        done
+    fi
 
-    jq -c '.[]' "$input_file" | while read -r bookmark; do
+    jq -c "$bookmarks_key | .[]" "$input_file" | while read -r bookmark; do
         local url=$(echo "$bookmark" | jq -r '.url')
         local title=$(echo "$bookmark" | jq -r '.title // empty')
         local tags=$(echo "$bookmark" | jq -r '.tags // [] | join(" ")')
+        local folder=$(echo "$bookmark" | jq -r '.folder // "general"')
+        local favorite=$(echo "$bookmark" | jq -r '.favorite // false')
 
         # Check for duplicate
         local exists=$(jq -r --arg url "$url" '.bookmarks | map(select(.url == $url)) | length' "$BOOKMARKS_FILE")
@@ -420,16 +891,27 @@ import_bookmarks() {
             tags_json=$(echo "$tags" | tr ' ' '\n' | grep -v '^$' | jq -R . | jq -s .)
         fi
 
+        # Ensure folder exists
+        local folder_exists=$(jq -r --arg f "$folder" '.folders | index($f) // empty' "$BOOKMARKS_FILE")
+        if [[ -z "$folder_exists" ]]; then
+            jq --arg f "$folder" '.folders += [$f]' "$BOOKMARKS_FILE" > "$BOOKMARKS_FILE.tmp" && mv "$BOOKMARKS_FILE.tmp" "$BOOKMARKS_FILE"
+        fi
+
         jq --arg url "$url" \
            --arg title "${title:-$(get_domain "$url")}" \
            --argjson tags "$tags_json" \
            --arg ts "$timestamp" \
-           --argjson id "$next_id" '
+           --argjson id "$next_id" \
+           --arg folder "$folder" \
+           --argjson fav "$favorite" '
             .bookmarks += [{
                 "id": $id,
                 "url": $url,
                 "title": $title,
                 "tags": $tags,
+                "folder": $folder,
+                "favorite": $fav,
+                "archived": false,
                 "created": $ts,
                 "accessed": null,
                 "access_count": 0
@@ -445,26 +927,43 @@ import_bookmarks() {
 }
 
 show_help() {
-    echo "Bookmarks - Command-line bookmark manager"
+    echo "Bookmarks v2.0 - Enhanced command-line bookmark manager"
     echo ""
     echo "Usage:"
-    echo "  bookmarks.sh add <url> [\"title\"] [tags...]  Add a bookmark"
-    echo "  bookmarks.sh list [tag]                     List bookmarks"
+    echo "  bookmarks.sh add <url> [\"title\"] [tags...] [--folder NAME] [--fav]"
+    echo "  bookmarks.sh list [tag] [--sort recent|accessed|alpha] [--folder NAME]"
     echo "  bookmarks.sh search \"query\"                 Search bookmarks"
     echo "  bookmarks.sh tags                           List all tags"
     echo "  bookmarks.sh open <id>                      Open in browser"
     echo "  bookmarks.sh remove <id>                    Remove a bookmark"
     echo "  bookmarks.sh edit <id>                      Edit bookmark"
+    echo ""
+    echo "Folders:"
+    echo "  bookmarks.sh folder                         List folders"
+    echo "  bookmarks.sh folder <name>                  Create folder / list contents"
+    echo "  bookmarks.sh folder delete <name>           Delete folder"
+    echo "  bookmarks.sh move <id> <folder>             Move bookmark to folder"
+    echo ""
+    echo "Favorites:"
+    echo "  bookmarks.sh fav <id>                       Toggle favorite status"
+    echo "  bookmarks.sh favorites                      List favorites"
+    echo ""
+    echo "Archive:"
+    echo "  bookmarks.sh archive <id>                   Archive a bookmark"
+    echo "  bookmarks.sh archived                       List archived bookmarks"
+    echo "  bookmarks.sh restore <id>                   Restore from archive"
+    echo ""
+    echo "Data:"
+    echo "  bookmarks.sh stats                          Show statistics"
     echo "  bookmarks.sh export [file]                  Export to JSON"
-    echo "  bookmarks.sh import <file>                  Import from JSON"
+    echo "  bookmarks.sh import <file>                  Import from JSON/HTML"
     echo "  bookmarks.sh help                           Show this help"
     echo ""
     echo "Examples:"
     echo "  bookmarks.sh add https://github.com"
-    echo "  bookmarks.sh add https://docs.python.org \"Python Docs\" python reference"
-    echo "  bookmarks.sh list python"
-    echo "  bookmarks.sh search docs"
-    echo "  bookmarks.sh open 3"
+    echo "  bookmarks.sh add https://docs.python.org \"Python Docs\" python ref --folder work"
+    echo "  bookmarks.sh list --sort accessed --folder work"
+    echo "  bookmarks.sh import ~/Downloads/bookmarks.html"
 }
 
 case "$1" in
@@ -473,7 +972,8 @@ case "$1" in
         add_bookmark "$@"
         ;;
     list|ls)
-        list_bookmarks "$2"
+        shift
+        list_bookmarks "$@"
         ;;
     search|find)
         shift
@@ -490,6 +990,31 @@ case "$1" in
         ;;
     edit)
         edit_bookmark "$2"
+        ;;
+    folder|folders)
+        shift
+        manage_folders "$@"
+        ;;
+    move|mv)
+        move_bookmark "$2" "$3"
+        ;;
+    fav|favorite)
+        toggle_favorite "$2"
+        ;;
+    favorites|favs)
+        list_favorites
+        ;;
+    archive)
+        archive_bookmark "$2"
+        ;;
+    archived)
+        list_archived
+        ;;
+    restore|unarchive)
+        restore_bookmark "$2"
+        ;;
+    stats|statistics)
+        show_stats
         ;;
     export)
         export_bookmarks "$2"

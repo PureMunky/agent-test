@@ -54,8 +54,8 @@
     {
       "name": "bookmarks",
       "path": "tools/bookmarks",
-      "description": "Command-line bookmark manager for URLs and resources with tagging and search",
-      "version": "1.0.0",
+      "description": "Enhanced bookmark manager with folders, favorites, archive, browser HTML import, sorting options, and statistics",
+      "version": "2.0.0",
       "category": "file-organization",
       "language": "bash",
       "added": "2026-01-17"
@@ -484,6 +484,11 @@
       "date": "2026-01-19",
       "action": "improve",
       "description": "Enhanced timelog tool v2.0: added pause/resume for interruptions, billable hours tracking with configurable hourly rates, inline #tag support, weekly summary with visual progress bar, edit/delete entries, filtering by project/tag/date, JSON/CSV export, and statistics"
+    },
+    {
+      "date": "2026-01-19",
+      "action": "improve",
+      "description": "Enhanced bookmarks tool v2.0: added folder organization, favorites with quick access, archive/restore for old bookmarks, browser HTML import (Chrome/Firefox/Safari), multiple sort options (recent/accessed/alpha), statistics dashboard, and automatic v1 to v2 migration"
     }
   ],
   "config": {
