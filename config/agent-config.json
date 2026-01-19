@@ -11,7 +11,9 @@
       "Write tests when appropriate",
       "Consolidate tools when functionality overlaps - merge similar tools into one cohesive solution",
       "Prefer enhancing existing tools over creating new ones when the new functionality logically extends an existing tool",
-      "Before creating a new tool, review existing tools to determine if the feature could be added there instead"
+      "Before creating a new tool, review existing tools to determine if the feature could be added there instead",
+      "Update the manifest.json file with appropriate commands that have been created so that future runs can understand what all the tools can do without needing to parse the entire tools directory.",
+      "Update or create a root readme.md file to include what tools are available and generally what they do. Include a link to each tool's specific readme file."
     ],
     "tool_categories": [
       "time-management",
