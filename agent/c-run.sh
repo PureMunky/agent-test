@@ -134,13 +134,13 @@ fi
 CREDENTIALS_CONTENT=$(cat "$CREDENTIALS_FILE")
 
 # SSH key for GitHub (optional)
-SSH_KEY_FILE="$AGENT_DIR/state/ssh/id_ed25519"
+SSH_KEY_FILE="$AGENT_DIR/../ssh/id_ed25519"
 SSH_KEY_CONTENT=""
 if [[ -f "$SSH_KEY_FILE" ]]; then
     SSH_KEY_CONTENT=$(cat "$SSH_KEY_FILE")
     echo "SSH key found - git push will be enabled"
 else
-    echo "WARNING: No SSH key found at $SSH_KEY_FILE - git push will fail"
+    echo "WARNING: No SSH key found at ssh/id_ed25519 - git push will fail"
 fi
 
 echo "Starting containerized agent run..."
