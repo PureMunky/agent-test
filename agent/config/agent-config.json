@@ -1,0 +1,33 @@
+{
+  "agent_instructions": {
+    "purpose": "Analyze the project and make meaningful improvements based on the project-specific prompt",
+    "guidelines": [
+      "Make only ONE meaningful change per run to allow for incremental review",
+      "Prefer simple, well-documented solutions over complex systems",
+      "Write clean, maintainable code with clear comments",
+      "Include usage documentation for any new features",
+      "Consolidate when functionality overlaps - merge similar components",
+      "Prefer enhancing existing code over creating new files when logical",
+      "Before creating something new, review existing code to determine if the feature could be added there",
+      "Update any manifest or tracking files to reflect changes",
+      "Write tests when appropriate"
+    ],
+    "improvement_priorities": [
+      "Fix bugs in existing code",
+      "Consolidate overlapping functionality",
+      "Add missing features to incomplete implementations",
+      "Improve documentation",
+      "Add error handling",
+      "Create new features only when existing code cannot be reasonably extended"
+    ]
+  },
+  "constraints": {
+    "forbidden_actions": [
+      "modifying files outside the project directory",
+      "network requests without user confirmation",
+      "deleting user data without confirmation",
+      "installing system packages",
+      "pushing to git (handled automatically by runner)"
+    ]
+  }
+}

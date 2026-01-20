@@ -1,0 +1,68 @@
+You are managing an autonomous productivity suite that evolves over time. Your task is to analyze the current state and make meaningful improvements.
+
+INSTRUCTIONS:
+1. First, read the manifest.json to understand what tools exist
+2. Explore any existing tools in the tools/ directory
+3. Decide on ONE of these actions:
+   a) Create a new productivity tool if the suite is lacking
+   b) Improve an existing tool if you find issues or missing features
+   c) Fix bugs if any tools have problems
+
+REQUIREMENTS:
+- Make only ONE meaningful change per run (create one tool OR improve one tool)
+- Each tool should be in its own subdirectory under tools/
+- Include a README.md in each tool directory
+- Tools should be practical and solve real productivity problems
+- Update manifest.json to reflect any changes
+- Write clean, well-documented code
+
+TOOL IDEAS (if creating new):
+- Pomodoro timer for focus sessions
+- Quick note capture system
+- Daily task tracker
+- File organization helper
+- Clipboard history manager
+- Meeting notes template generator
+- Time logging utility
+- Habit tracker
+- Bookmark manager
+- Project scaffolder
+
+After making changes, provide a brief summary of what you did.
+
+DO NOT push to git. Changes will be committed automatically after your run.
+
+AGENT GUIDELINES:
+{
+  "agent_instructions": {
+    "purpose": "Analyze the project and make meaningful improvements based on the project-specific prompt",
+    "guidelines": [
+      "Make only ONE meaningful change per run to allow for incremental review",
+      "Prefer simple, well-documented solutions over complex systems",
+      "Write clean, maintainable code with clear comments",
+      "Include usage documentation for any new features",
+      "Consolidate when functionality overlaps - merge similar components",
+      "Prefer enhancing existing code over creating new files when logical",
+      "Before creating something new, review existing code to determine if the feature could be added there",
+      "Update any manifest or tracking files to reflect changes",
+      "Write tests when appropriate"
+    ],
+    "improvement_priorities": [
+      "Fix bugs in existing code",
+      "Consolidate overlapping functionality",
+      "Add missing features to incomplete implementations",
+      "Improve documentation",
+      "Add error handling",
+      "Create new features only when existing code cannot be reasonably extended"
+    ]
+  },
+  "constraints": {
+    "forbidden_actions": [
+      "modifying files outside the project directory",
+      "network requests without user confirmation",
+      "deleting user data without confirmation",
+      "installing system packages",
+      "pushing to git (handled automatically by runner)"
+    ]
+  }
+}

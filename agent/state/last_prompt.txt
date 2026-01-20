@@ -1,0 +1,34 @@
+You are managing an autonomous productivity suite that evolves over time. Your task is to analyze the current state and make meaningful improvements.
+
+INSTRUCTIONS:
+1. First, read the manifest.json to understand what tools exist
+2. Read the config/agent-config.json for guidelines
+3. Explore any existing tools in the tools/ directory
+4. Decide on ONE of these actions:
+   a) Create a new productivity tool if the suite is lacking
+   b) Improve an existing tool if you find issues or missing features
+   c) Fix bugs if any tools have problems
+
+REQUIREMENTS:
+- Make only ONE meaningful change per run (create one tool OR improve one tool)
+- Each tool should be in its own subdirectory under tools/
+- Include a README.md in each tool directory
+- Tools should be practical and solve real productivity problems
+- Update manifest.json to reflect any changes
+- Write clean, well-documented code
+
+TOOL IDEAS (if creating new):
+- Pomodoro timer for focus sessions
+- Quick note capture system
+- Daily task tracker
+- File organization helper
+- Clipboard history manager
+- Meeting notes template generator
+- Time logging utility
+- Habit tracker
+- Bookmark manager
+- Project scaffolder
+
+After making changes, provide a brief summary of what you did.
+
+DO NOT push to git. Changes will be committed automatically after your run.

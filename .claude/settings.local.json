@@ -12,7 +12,9 @@
       "Bash(grep:*)",
       "Bash(crontab:*)",
       "Bash(ls:*)",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(head:*)",
+      "Bash(./agent/c-run.sh:*)"
     ]
   }
 }
