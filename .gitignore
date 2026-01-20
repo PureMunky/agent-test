@@ -7,6 +7,10 @@ logs/
 # Agent state
 .agent/
 
+# SSH keys
+ssh/
+agent/state/ssh/
+
 # Editor backups
 *~
 *.swp
