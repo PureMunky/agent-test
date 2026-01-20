@@ -23,12 +23,58 @@ evolution-agent/           # This repository
 │   │   └── agent-config.json   # Global agent guidelines
 │   ├── state/             # Runtime state (timestamps, markers)
 │   └── logs/              # Execution logs
+├── ssh/                   # SSH keys for GitHub (gitignored)
+│   ├── id_ed25519         # Private key
+│   └── id_ed25519.pub     # Public key
 └── README.md
 
 ../my-project/             # Your project (separate repo)
 ├── project-config.json    # Evolution instructions
 └── ...                    # Your project files
 ```
+
+## Setup
+
+### 1. Install Dependencies
+
+```bash
+# Install Claude Code CLI
+npm install -g @anthropic-ai/claude-code
+
+# Ensure jq is installed (for JSON processing)
+# Ubuntu/Debian
+sudo apt install jq
+
+# macOS
+brew install jq
+```
+
+### 2. Authenticate with Claude
+
+Run `claude` once to authenticate:
+
+```bash
+claude
+```
+
+This creates `~/.claude/.credentials.json` which is required for the agent to run. For containerized runs (`c-run.sh`), this file is copied into the container at runtime.
+
+### 3. Set Up SSH Keys (Optional - for auto_push)
+
+If you want the agent to push commits to GitHub, generate an SSH key and place it in the `ssh/` directory:
+
+```bash
+# Generate a new key (or copy an existing one)
+ssh-keygen -t ed25519 -f ssh/id_ed25519 -N ""
+
+# Add the public key to your GitHub account
+cat ssh/id_ed25519.pub
+# Copy this output to GitHub → Settings → SSH Keys
+```
+
+The `ssh/` directory is gitignored to keep your keys out of version control.
+
+**Note:** For non-containerized runs (`run.sh`), your system's default SSH configuration is used instead.
 
 ## Quick Start
 
